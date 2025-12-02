@@ -55,9 +55,31 @@ public class StudentController {
     }
 
     // 🎓 Inscrire un étudiant à un cours
-    @PostMapping("/{id}/enroll/{courseId}")
-    public String enrollStudent(@PathVariable int id, @PathVariable int courseId) {
-        studentService.enrollStudentInCourse(id, courseId);
-        return "Student enrolled successfully in course!";
+@PostMapping("/{id}/enroll/{courseId}")
+public ResponseEntity<?> enrollStudent(@PathVariable int id, @PathVariable int courseId) {
+    try {
+        // Vérifie si l'étudiant existe
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found with id " + id));
+
+        // Vérifie si le cours existe
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId));
+
+        // Vérifie si l'étudiant est déjà inscrit au cours
+        if (student.getCourses().contains(course)) {
+            return ResponseEntity.badRequest().body("Student already enrolled in this course");
+        }
+
+        // Ajoute le cours à l'étudiant
+        student.getCourses().add(course);
+        studentRepository.save(student);
+
+        // Réponse succès
+        return ResponseEntity.ok("Student enrolled successfully in course!");
+    } catch (Exception e) {
+        // Retourne l'erreur au frontend
+        return ResponseEntity.status(500).body("Enrollment failed: " + e.getMessage());
     }
 }
+
