@@ -15,7 +15,8 @@ public class DjangoCourseClient {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public void enrollStudentInCourse(int studentId, int courseId) {
-        String url = "http://localhost:8000/studentcourses/add/";
+        String url = "http://localhost:9090/courses/studentcourses/add/";
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
