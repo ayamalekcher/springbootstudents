@@ -3,6 +3,10 @@ package com.example.student_service.controller;
 import com.example.student_service.model.Student;
 import com.example.student_service.service.StudentService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import java.util.NoSuchElementException;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -54,32 +58,18 @@ public class StudentController {
         return studentService.searchByName(name);
     }
 
-    // 🎓 Inscrire un étudiant à un cours
-@PostMapping("/{id}/enroll/{courseId}")
-public ResponseEntity<?> enrollStudent(@PathVariable int id, @PathVariable int courseId) {
+    @PostMapping("/{id}/enroll/{courseId}")
+public ResponseEntity<String> enrollStudent(@PathVariable int id, @PathVariable int courseId) {
     try {
-        // Vérifie si l'étudiant existe
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found with id " + id));
-
-        // Vérifie si le cours existe
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId));
-
-        // Vérifie si l'étudiant est déjà inscrit au cours
-        if (student.getCourses().contains(course)) {
-            return ResponseEntity.badRequest().body("Student already enrolled in this course");
-        }
-
-        // Ajoute le cours à l'étudiant
-        student.getCourses().add(course);
-        studentRepository.save(student);
-
-        // Réponse succès
+        studentService.enrollStudentInCourse(id, courseId);
         return ResponseEntity.ok("Student enrolled successfully in course!");
+    } catch (NoSuchElementException e) {
+        // إذا الطالب أو الكورس غير موجود
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student or Course not found");
     } catch (Exception e) {
-        // Retourne l'erreur au frontend
-        return ResponseEntity.status(500).body("Enrollment failed: " + e.getMessage());
+        // أي خطأ آخر في السيرفر
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+ .body("Error enrolling student: " + e.getMessage());
     }
 }
-
+}
