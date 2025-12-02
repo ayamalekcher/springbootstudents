@@ -9,34 +9,27 @@ import org.springframework.http.HttpHeaders;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Service
 public class DjangoCourseClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     public void enrollStudentInCourse(int studentId, int courseId) {
-        String url = "http://localhost:9090/courses/studentcourses/add/";
+        String url = "https://djangocourses-1.onrender.com/courses/studentcourses/add/";
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
         Map<String, Object> data = new HashMap<>();
-        Map<String, Object> studentMap = new HashMap<>();
-        Map<String, Object> courseMap = new HashMap<>();
-
-        studentMap.put("id", studentId);
-        courseMap.put("id", courseId);
-
-        data.put("student", studentMap);
-        data.put("course", courseMap);
+        data.put("student_id", studentId);
+        data.put("course", courseId); // ⚠ مهم !! Django يستعمل "course" وليس "course_id"
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(data, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-        try {
-            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-            System.out.println("✅ Django Response: " + response.getBody());
-        } catch (Exception e) {
-            throw new RuntimeException("Error calling Django Course Service: " + e.getMessage());
-        }
+        System.out.println("Django Response: " + response.getBody());
     }
 }
+
