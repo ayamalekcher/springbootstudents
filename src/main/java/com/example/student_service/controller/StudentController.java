@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/student") // ✅ Même chemin que dans React
-@CrossOrigin(origins = "*")// ✅ Autoriser React
+
 public class StudentController {
 
     private final StudentService studentService;
