@@ -58,18 +58,17 @@ public class StudentController {
         return studentService.searchByName(name);
     }
 
+     // ✅ Inscrire un étudiant à un cours
     @PostMapping("/{id}/enroll/{courseId}")
-public ResponseEntity<String> enrollStudent(@PathVariable int id, @PathVariable int courseId) {
-    try {
-        studentService.enrollStudentInCourse(id, courseId);
-        return ResponseEntity.ok("Student enrolled successfully in course!");
-    } catch (NoSuchElementException e) {
-        // إذا الطالب أو الكورس غير موجود
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student or Course not found");
-    } catch (Exception e) {
-        // أي خطأ آخر في السيرفر
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
- .body("Error enrolling student: " + e.getMessage());
+    public ResponseEntity<String> enrollStudent(@PathVariable int id, @PathVariable int courseId) {
+        try {
+            studentService.enrollStudentInCourse(id, courseId);
+            return ResponseEntity.ok("Student enrolled successfully in course!");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student or Course not found");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error enrolling student: " + e.getMessage());
+        }
     }
-}
 }

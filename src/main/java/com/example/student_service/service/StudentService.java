@@ -5,6 +5,8 @@ import com.example.student_service.model.University;
 import com.example.student_service.repository.StudentRepository;
 import com.example.student_service.repository.UniversityRepository;
 import org.springframework.stereotype.Service;
+import java.util.NoSuchElementException;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +57,12 @@ public class StudentService {
         return studentRepository.findByFirstNameContainingIgnoreCase(name);
     }
 
-    public void enrollStudentInCourse(int studentId, int courseId) {
+     public void enrollStudentInCourse(int studentId, int courseId) {
+        // ✅ هنا نتحقق أن الطالب موجود
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new NoSuchElementException("Student not found with id = " + studentId));
+
+        // ✅ Call to Django service
         courseClient.enrollStudentInCourse(studentId, courseId);
     }
 
